@@ -7,9 +7,49 @@
 </head>
 <body>
 
-<h2>Binomial Distribution</h2>
+<h2>Binomial Distribution Calculator</h2>
+
+<!-- Binomial Probability Calculation -->
+<div>
+    <h3>Calculate Binomial Probability</h3>
+    <label for="k">Enter k value:</label>
+    <input type="number" id="k">
+    <br>
+    <label for="n">Enter N value:</label>
+    <input type="number" id="n">
+    <br>
+    <label for="p">Enter P value:</label>
+    <input type="number" step="0.01" id="p">
+    <br>
+    <button onclick="calculateBinomial()">Calculate Probability</button>
+    <p id="resultProbability"></p>
+</div>
+
+<!-- List the values of Binomial distribution for all cases -->
+<div>
+    <h3>Binomial Distribution Values</h3>
+    <label for="nDist">Enter N value:</label>
+    <input type="number" id="nDist">
+    <br>
+    <label for="pDist">Enter P value:</label>
+    <input type="number" step="0.01" id="pDist">
+    <br>
+    <button onclick="listBinomialDistribution()">List Distribution Values</button>
+    <div id="distributionTable"></div>
+</div>
 
 <script>
+// Function to calculate binomial probability
+function calculateBinomial() {
+    const k = parseInt(document.getElementById('k').value);
+    const n = parseInt(document.getElementById('n').value);
+    const p = parseFloat(document.getElementById('p').value);
+
+    const prob = binomialProbability(k, n, p);
+
+    document.getElementById('resultProbability').innerText = `The probability of having exactly ${k} is ${prob}`;
+}
+
 // Function to calculate binomial probability
 function binomialProbability(k, n, p) {
     const binomCoefficient = factorial(n) / (factorial(k) * factorial(n - k));
@@ -22,59 +62,23 @@ function factorial(num) {
     return num * factorial(num - 1);
 }
 
-// Calculate binomial probability
-const probability1 = binomialProbability(10, 12, 0.6);
+// Function to list values of binomial distribution
+function listBinomialDistribution() {
+    const nDist = parseInt(document.getElementById('nDist').value);
+    const pDist = parseFloat(document.getElementById('pDist').value);
 
-// Calculate binomial probability for at least x cases
-const probability2 = Array.from({ length: 3 }, (_, i) => binomialProbability(i, 5, 0.5)).reduce((acc, val) => acc + val, 0);
+    const r_values = Array.from({ length: nDist + 1 }, (_, i) => i);
+    const dist = r_values.map(r => binomialProbability(r, nDist, pDist));
 
-// Organize binomial distribution value list
-// Setting the values
-const n = 12;
-const p = 0.6;
-// Defining the list of r values
-const r_values = Array.from({ length: n + 1 }, (_, i) => i);
-// Obtaining the mean and variance
-const mean = n * p;
-const varSum = n * p * (1 - p);
-// list of pmf values
-const dist = r_values.map(r => binomialProbability(r, n, p));
-// printing the table
-let tableHTML = "<table><tr><th>r</th><th>p(r)</th></tr>";
-for (let i = 0; i <= n; i++) {
-    tableHTML += `<tr><td>${r_values[i]}</td><td>${dist[i]}</td></tr>`;
+    // Display the distribution table
+    let tableHTML = '<table><tr><th>r</th><th>p(r)</th></tr>';
+    for (let i = 0; i <= nDist; i++) {
+        tableHTML += `<tr><td>${r_values[i]}</td><td>${dist[i]}</td></tr>`;
+    }
+    tableHTML += '</table>';
+
+    document.getElementById('distributionTable').innerHTML = tableHTML;
 }
-tableHTML += "</table>";
-
-// printing mean and variance
-const meanVarianceHTML = `
-    <p>Mean: ${mean}</p>
-    <p>Variance: ${varSum}</p>
-`;
-
-// Display the results
-document.write("<h3>Binomial Probability</h3>");
-document.write(`<p>Probability (k=10, n=12, p=0.6): ${probability1}</p>`);
-document.write(`<p>Probability (at least 2 cases, n=5, p=0.5): ${probability2}</p>`);
-document.write("<h3>Binomial Distribution Table</h3>");
-document.write(tableHTML);
-document.write("<h3>Mean and Variance</h3>");
-document.write(meanVarianceHTML);
-
-// Graph the distribution
-const canvas = document.createElement("canvas");
-canvas.id = "distributionChart";
-canvas.width = 400;
-canvas.height = 300;
-document.body.appendChild(canvas);
-
-const ctx = canvas.getContext("2d");
-// list of pmf values for plotting
-const distForPlot = r_values.map(r => binomialProbability(r, n, p));
-// plotting the graph
-distForPlot.forEach((value, index) => {
-    ctx.fillRect(index * 30, canvas.height - value * 200, 20, value * 200);
-});
 </script>
 
 </body>
